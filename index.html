@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ChiNhel GitHub Pro Tutorial</title>
+<style>
+:root{--bg:#0a0f1f;--card:#162032;--text:#e2e8f0;--green:#22c55e;--blue:#3b82f6;--yellow:#eab308;--red:#ef4444;--cyan:#22d3ee;--purple:#a855f7}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:system-ui;line-height:1.6;padding:12px}
+.header{background:linear-gradient(135deg,#0a0f1f,#162032);border:1px solid #22304a;border-radius:18px;padding:20px;text-align:center;margin-bottom:12px}
+.header h1{background:linear-gradient(90deg,#22d3ee,#a855f7,#22c55e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:22px;font-weight:900}
+.header p{color:#94a3b8;font-size:11px;margin-top:6px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding:8px 0;position:sticky;top:0;background:var(--bg);z-index:20}
+.tab{white-space:nowrap;background:var(--card);border:1px solid #22304a;color:#94a3b8;padding:9px 16px;border-radius:22px;font-size:11px;font-weight:800;cursor:pointer}
+.tab.active{background:var(--purple);color:white;border-color:var(--purple)}
+.search{width:100%;padding:12px;border-radius:12px;border:1px solid #22304a;background:var(--card);color:white;margin:10px 0;outline:none}
+.card{background:var(--card);border:1px solid #22304a;border-radius:14px;padding:14px;margin-bottom:12px}
+.card h3{font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:900}
+.badge-green{background:#14532d;color:#22c55e}
+.badge-blue{background:#1e3a5f;color:#60a5fa}
+.badge-yellow{background:#422006;color:#facc15}
+.badge-red{background:#450a0a;color:#f87171}
+.badge-purple{background:#2e1065;color:#c4b5fd}
+.code{background:#0a0f1f;border:1px solid #1e293b;border-left:3px solid var(--purple);padding:10px;border-radius:8px;font-family:monospace;font-size:11px;overflow-x:auto;margin:8px 0;white-space:pre-wrap;word-break:break-all}
+.code-red{border-left-color:var(--red)}
+.code-green{border-left-color:var(--green)}
+.code-blue{border-left-color:var(--blue)}
+.code-yellow{border-left-color:var(--yellow)}
+.copy-btn{background:var(--blue);color:white;border:none;padding:5px 10px;border-radius:6px;font-size:10px;margin-top:6px;cursor:pointer}
+.step{counter-increment:step;position:relative;padding-left:28px;margin:12px 0}
+.step::before{content:counter(step);position:absolute;left:0;top:0;background:var(--purple);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900}
+ol{list-style:none;counter-reset:step}
+.err{background:#1a1010;border:1px solid #3a1a1a;border-radius:10px;padding:10px;margin:8px 0}
+.err-title{color:#f87171;font-weight:800;font-size:12px}
+.fix{color:#22c55e;font-size:11px;margin-top:6px}
+.good{background:#0a1a10;border:1px solid #1a3a1a;border-radius:10px;padding:10px;margin:8px 0}
+</style>
+</head><body>
+<div class="header">
+<h1>ChiNhel GitHub Pro</h1>
+<p>From Login to Deploy • Offline • Lahat ng commands + errors na na-fix natin sa BSRTSum deploy!</p>
+<p style="margin-top:8px;color:#a855f7;font-size:11px">LIVE EXAMPLE: jonelzky.github.io/BSRTSum - 200 OK deployed purely sa phone!</p>
+</div>
+
+<div class="tabs" id="tabs">
+<div class="tab active" onclick="showTab('LOGIN')">1. LOGIN</div>
+<div class="tab" onclick="showTab('CONFIG')">2. CONFIG</div>
+<div class="tab" onclick="showTab('CREATE')">3. CREATE REPO</div>
+<div class="tab" onclick="showTab('PUSH')">4. PUSH</div>
+<div class="tab" onclick="showTab('PAGES')">5. PAGES</div>
+<div class="tab" onclick="showTab('RELEASE')">6. RELEASE</div>
+<div class="tab" onclick="showTab('ERROR')">7. TROUBLESHOOT</div>
+</div>
+
+<input class="search" id="s" placeholder="Search... ex: auth, 404, remote, space error, /tmp" oninput="filter()">
+
+<div id="list">
+
+<!-- LOGIN -->
+<div class="card" data-tab="LOGIN">
+<h3><span class="badge badge-purple">LOGIN</span> 1. Login sa GitHub via Termux (gh CLI)</h3>
+<div class="code">pkg install -y git gh
+
+# LOGIN - 2 options:
+# OPTION A: Browser login (mas madali sa phone)
+gh auth login
+# -> What account? GitHub.com
+# -> What is your preferred protocol? HTTPS
+# -> Authenticate Git? Yes
+# -> How to authenticate? Login with a web browser
+# -> Copy one-time code, open browser, paste code, authorize
+
+# OPTION B: Token login (pag ayaw ng browser)
+# 1. Pumunta sa github.com > Settings > Developer settings > Personal access tokens > Tokens (classic) > Generate new token
+# 2. Check: repo, workflow, write:packages, delete:packages
+# 3. Copy token
+gh auth login --with-token
+# paste token + Enter
+
+# check kung logged in
+gh auth status
+# dapat: Logged in to github.com as jonelzky (yung username mo)
+
+# kung failed, logout tapos login ulit
+gh auth logout
+gh auth login</div>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)">Copy</button>
+</div>
+
+<!-- CONFIG -->
+<div class="card" data-tab="CONFIG">
+<h3><span class="badge badge-blue">CONFIG</span> 2. Git Config (one-time setup)</h3>
+<div class="code">git config --global user.name "Jonel Garvin Malabayabas"
+git config --global user.email "jonel@example.com"
+# check
+git config --global --list
+# dapat may user.name at user.email
+
+# kung gusto mo i-check lahat
+cat ~/.gitconfig
+
+# set default branch to main (hindi master)
+git config --global init.defaultBranch main</div>
+
+<div class="good" style="margin-top:10px">
+<b style="color:#22c55e;font-size:12px">✅ GOOD PRACTICE:</b>
+<div style="font-size:11px;margin-top:4px">Lagi mo i-set yung user.name at user.email bago mag-commit, kasi kung hindi, mag-eerror yung git commit!</div>
+</div>
+</div>
+
+<!-- CREATE -->
+<div class="card" data-tab="CREATE">
+<h3><span class="badge badge-green">CREATE</span> 3. Gawa ng Repo - 3 Methods</h3>
+
+<h4 style="font-size:12px;color:#22d3ee;margin:10px 0 6px">METHOD A: Auto create + push (pinaka-madali - ginamit natin sa BSRTSum!)</h4>
+<div class="code">cd ~/BSRTSum_Final
+# or kung saan yung project mo
+# dapat may files ka na dito: index.html, etc
+
+git init
+git add .
+git commit -m "Initial BSRTSum"
+
+# ISANG COMMAND LANG - gawa repo + push!
+gh repo create BSRTSum --public --source=. --remote=origin --push
+# -> Creates repo jonelzky/BSRTSum sa GitHub + push lahat!
+
+# check
+gh repo view
+# dapat may URL na: https://github.com/jonelzky/BSRTSum</div>
+
+<h4 style="font-size:12px;color:#22d3ee;margin:10px 0 6px">METHOD B: Manual via website tapos push</h4>
+<div class="code">cd ~/MyApp
+git init
+git add .
+git commit -m "Initial"
+
+# gawa repo sa github.com website manually
+# tapos copy yung URL
+git remote add origin https://github.com/jonelzky/MyApp.git
+git branch -M main
+git push -u origin main</div>
+
+<h4 style="font-size:12px;color:#22d3ee;margin:10px 0 6px">METHOD C: Clone existing repo tapos edit</h4>
+<div class="code"># kung may existing repo ka na
+cd ~
+git clone https://github.com/jonelzky/BSRTSum.git
+cd BSRTSum
+# edit files
+nano index.html
+git add index.html
+git commit -m "Update index"
+git push</div>
+</div>
+
+<!-- PUSH -->
+<div class="card" data-tab="PUSH">
+<h3><span class="badge badge-blue">PUSH</span> 4. Push Updates - Daily Workflow</h3>
+<div class="code"># araw-araw na gagawin pag may binago ka
+cd ~/BSRTSum_Final
+
+# check status
+git status
+# makikita kung ano nabago
+
+# add lahat ng nabago
+git add .
+# or specific file lang
+# git add index.html BSRTSum.apk
+
+# commit
+git commit -m "Update: add new feature"
+
+# push
+git push
+
+# kung first time mo mag-push at nag-error na "no upstream"
+git push -u origin main
+
+# check sa github.com/jonelzky/BSRTSum - dapat updated na!</div>
+
+<h4 style="font-size:12px;color:#eab308;margin:10px 0 6px">⚠️ PAG MAY CONFLICT (may nabago sa GitHub na wala sa phone mo)</h4>
+<div class="code">git pull --rebase
+# kung may conflict, edit mo yung file na may <<<< >>>>
+nano index.html
+# ayusin, tapos
+git add index.html
+git rebase --continue
+git push</div>
+</div>
+
+<!-- PAGES -->
+<div class="card" data-tab="PAGES">
+<h3><span class="badge badge-green">PAGES</span> 5. Deploy to GitHub Pages - Para Maging Website!</h3>
+
+<div class="step"><b>Step 1: Dapat may index.html sa ROOT, hindi sa subfolder!</b>
+<div class="code">cd ~/BSRTSum_Final
+ls -lh
+# dapat may index.html dito mismo, hindi sa app/ or docs/
+# kung wala, copy mo:
+cp app/src/main/assets/index.html index.html
+# or kung iba name ng HTML mo:
+cp KimSumSum.html index.html
+
+git add index.html
+git commit -m "Add index.html for Pages"
+git push</div>
+</div>
+
+<div class="step"><b>Step 2: Enable Pages sa GitHub website</b>
+<div class="code"># Hindi to sa Termux, sa browser gawin:
+# 1. Pumunta sa github.com/jonelzky/BSRTSum
+# 2. Click Settings (tab sa taas)
+# 3. Sa left sidebar, click Pages
+# 4. Under "Build and deployment", Source: Deploy from a branch
+# 5. Branch: main / root (hindi docs!)
+# 6. Click Save
+# 7. Wait 1-2 mins, may lalabas na:
+# "Your site is live at https://jonelzky.github.io/BSRTSum/"
+
+# Check kung live na:
+curl -I https://jonelzky.github.io/BSRTSum/
+# dapat HTTP/2 200, hindi 404!
+
+# kung 404 pa, wait lang 2-3 mins, nagbi-build pa si GitHub!</div>
+</div>
+
+<div class="step"><b>Step 3: Main Hub - jonelzky.github.io (yung may 4-6 apps list)</b>
+<div class="code">cd ~/github-bsrt
+# or kung saan mo na-clone yung jonelzky.github.io repo
+git clone https://github.com/jonelzky/jonelzky.github.io.git
+cd jonelzky.github.io
+
+# edit index.html, dagdag mo new app card
+nano index.html
+# add mo:
+# <a href="https://jonelzky.github.io/BSRTSum/">BSRTSum</a>
+
+git add index.html
+git commit -m "Add BSRTSum to hub - now 5 apps"
+git push
+# after 2 mins, live na sa https://jonelzky.github.io/</div>
+</div>
+</div>
+
+<!-- RELEASE -->
+<div class="card" data-tab="RELEASE">
+<h3><span class="badge badge-yellow">RELEASE</span> 6. Gawa ng Release + APK Download Link</h3>
+<div class="code"># dapat may APK ka na sa bin/ or Download/
+cd ~/BSRTSum_Final
+ls -lh bin/*.apk
+# or
+ls -lh /storage/emulated/0/Download/*.apk
+
+# gawa release via gh CLI - ISANG COMMAND!
+gh release create v1.0 bin/BSRTSum-unsigned.apk --title "BSRTSum v1.0" --notes "First release - PDF summary & Taglish"
+
+# with multiple files
+gh release create v1.1 bin/BSRTSum.apk index.html icon.png --title "v1.1 Update" --notes "Fixed file chooser"
+
+# check release
+gh release view v1.0
+
+# list all releases
+gh release list
+
+# delete release pag nagkamali
+gh release delete v1.0 --yes
+
+# yung APK link magiging:
+# https://github.com/jonelzky/BSRTSum/releases/download/v1.0/BSRTSum-unsigned.apk
+
+# para ma-download ng iba!
+
+# upload additional file sa existing release
+gh release upload v1.0 /storage/emulated/0/Download/TermuxFULL1163.apk --clobber</div>
+
+<div class="good" style="margin-top:10px">
+<b style="color:#22c55e;font-size:12px">✅ AFTER RELEASE:</b>
+<div style="font-size:11px;margin-top:4px">Punta sa github.com/jonelzky/BSRTSum/releases/tag/v1.0 - dapat may APK na dun na pwede i-download ng kahit sino!</div>
+</div>
+</div>
+
+<!-- ERROR -->
+<div class="card" data-tab="ERROR">
+<h3><span class="badge badge-red">ERRORS</span> 7. TROUBLESHOOT - Lahat ng Error na Na-fix Natin!</h3>
+
+<div class="err">
+<div class="err-title">❌ ERROR 1: Space in /tmp/ github-bsrt - fatal: cannot create directory</div>
+<div class="code code-red">fatal: cannot create directory at '/tmp/ github-bsrt': Invalid argument
+# may space sa path!</div>
+<div class="fix">✅ FIX: Wag gumamit ng folder na may space! Sa Termux, yung /tmp minsan nagiging "/tmp/ github-bsrt" (may space)!<br><br>Dapat:<br>cd ~/github-bsrt  <- nasa HOME, walang space!<br>Hindi:<br>cd "/tmp/ github-bsrt"  <- may space, error!<br><br>Fix:<br>mkdir -p ~/github-bsrt<br>cd ~/github-bsrt<br>git clone ...</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 2: git init sa HOME - /data/data/com.termux/files/home/.git - NAGKAGULO!</div>
+<div class="code code-red">Initialized empty Git repository in /data/data/com.termux/files/home/.git/
+# Nasa HOME ka nag git init, hindi sa project folder!</div>
+<div class="fix">✅ FIX: Dapat sa project folder ka mag git init, hindi sa ~!<br><br>MALI:<br>cd ~<br>git init  <- LAHAT NG FILES SA HOME MAGIGING GIT REPO! DELIKADO!<br><br>TAMA:<br>cd ~/BSRTSum_Final<br>git init  <- dito lang sa project folder!<br><br>Kung nagkamali ka, delete mo:<br>rm -rf ~/.git<br>cd ~/BSRTSum_Final<br>git init</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 3: Read-only file system /tmp</div>
+<div class="code code-red">error: cannot open /tmp/... Read-only file system</div>
+<div class="fix">✅ FIX: Sa Termux, yung /tmp minsan read-only! Gamitin mo ~/tmp or $PREFIX/tmp!<br><br>mkdir -p ~/tmp<br>export TMPDIR=~/tmp<br>cd ~/BSRTSum_Final<br>git push<br><br>Or lagay mo sa ~/.bashrc:<br>echo 'export TMPDIR=$HOME/tmp' >> ~/.bashrc</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 4: GitHub Pages 404 - Site not found</div>
+<div class="code code-red">404 - There isn't a GitHub Pages site here.</div>
+<div class="fix">✅ FIX:<br>1. Check kung may index.html sa ROOT ng main branch (hindi sa docs/ or app/)<br>git ls-files | grep index.html<br># dapat may index.html sa list<br><br>2. Check Pages settings: github.com/USER/REPO > Settings > Pages > Source: main / root (hindi docs!)<br><br>3. Wait 2-3 mins, nagbi-build pa!<br><br>4. Check curl:<br>curl -I https://jonelzky.github.io/BSRTSum/<br># dapat 200, hindi 404<br><br>5. Kung wala pa rin, push ka ulit ng empty commit:<br>git commit --allow-empty -m "Trigger Pages build"<br>git push</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 5: remote origin already exists</div>
+<div class="code code-red">fatal: remote origin already exists.</div>
+<div class="fix">✅ FIX:<br># remove muna old remote<br>git remote remove origin<br># add ulit<br>git remote add origin https://github.com/jonelzky/BSRTSum.git<br>git push -u origin main<br><br>Or check remotes:<br>git remote -v</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 6: Authentication failed / gh auth login failed</div>
+<div class="code code-red">failed to authenticate via web browser
+HTTP 401: Bad credentials</div>
+<div class="fix">✅ FIX:<br>gh auth logout<br>gh auth login<br># piliin: GitHub.com > HTTPS > Yes > Login with a web browser<br># copy code, open browser, paste, authorize<br><br>Or token method:<br>gh auth login --with-token <br># paste personal access token (classic) na may repo scope<br><br>Check:<br>gh auth status</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 7: failed to push - Updates were rejected / need to pull</div>
+<div class="code code-red">! [rejected] main -> main (fetch first)
+hint: Updates were rejected because the remote contains work that you do not have locally.</div>
+<div class="fix">✅ FIX:<br>git pull --rebase<br># ayusin conflicts kung meron<br>git push<br><br>Or force push kung sure ka (delikado, mawawala remote changes!):<br>git push -f origin main  <- GAMITIN LANG PAG SURE KA!</div>
+</div>
+
+<div class="err">
+<div class="err-title">❌ ERROR 8: gh repo create failed - Name already exists</div>
+<div class="code code-red">GraphQL: Name already taken (createRepository)</div>
+<div class="fix">✅ FIX: May existing repo na na same name! 2 options:<br><br>1. Gamitin existing repo:<br>git remote add origin https://github.com/jonelzky/BSRTSum.git<br>git push -u origin main<br><br>2. Delete old repo sa github.com website > Settings > Danger Zone > Delete repository<br>Tapos gawa ulit:<br>gh repo create BSRTSum --public --source=. --remote=origin --push</div>
+</div>
+
+</div>
+
+<div class="card" data-tab="CREATE">
+<h3>🎯 ONE-SHOT FULL DEPLOY SCRIPT (Galing sa BSRTSum Success!)</h3>
+<div class="code"># From 0 to live website + APK release - 5 mins lang!
+cd ~/MyNewApp_Final
+
+# 1. git init + commit
+git init
+git add .
+git commit -m "Initial MyNewApp"
+
+# 2. create repo + push (isang command!)
+gh repo create MyNewApp --public --source=. --remote=origin --push
+
+# 3. create release with APK
+gh release create v1.0 bin/MyNewApp-unsigned.apk --title "v1.0" --notes "First release"
+
+# 4. check live
+echo "Check: https://github.com/jonelzky/MyNewApp"
+echo "After enabling Pages: https://jonelzky.github.io/MyNewApp/"
+
+# 5. add to main hub jonelzky.github.io
+cd ~/github-bsrt/jonelzky.github.io
+nano index.html
+# add card for MyNewApp
+git add index.html
+git commit -m "Add MyNewApp - now 7 apps!"
+git push
+
+echo "DONE! Live na lahat!"</div>
+<button class="copy-btn" onclick="navigator.clipboard.writeText(this.previousElementSibling.textContent)">Copy Full Deploy</button>
+</div>
+
+</div>
+
+<script>
+let curTab='LOGIN';
+function showTab(t){
+  curTab=t;
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  event.target.classList.add('active');
+  filter();
+}
+function filter(){
+  const q=document.getElementById('s').value.toLowerCase();
+  document.querySelectorAll('.card').forEach(el=>{
+    const inTab=el.dataset.tab===curTab;
+    const inSearch=el.textContent.toLowerCase().includes(q);
+    el.style.display=(inTab && inSearch)?'block':'none';
+  });
+}
+filter();
+document.querySelectorAll('.card').forEach(el=>{
+  if(el.dataset.tab!==curTab) el.style.display='none';
+});
+</script>
+</body></html>
